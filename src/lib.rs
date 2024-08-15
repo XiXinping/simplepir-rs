@@ -9,6 +9,28 @@ use rand_distr::Uniform;
 use regev::{encrypt, gen_a_matrix, gen_secret_key};
 use std::ops::RangeInclusive;
 
+pub fn run() {
+    let index = 0;
+    let db_side_len = 4;
+    let secret_dimension = 2048;
+    let mod_power = 3;
+    let plain_mod = 2_u64.pow(mod_power);
+    let database = Database::new_random(4, 0..=plain_mod - 1, Some(42));
+    let compressed_db = database.compress(mod_power);
+    let (server_hint, client_hint) = setup(&database, secret_dimension, Some(42));
+    let (client_state, query_cipher) =
+        query(index, db_side_len, secret_dimension, server_hint, plain_mod);
+    let answer_cipher = answer(&compressed_db, &query_cipher);
+    let record = recover(
+        &client_state,
+        &client_hint,
+        &answer_cipher,
+        &query_cipher,
+        plain_mod,
+    );
+    println!("Database: {:?} Record: {record}", database);
+}
+
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd)]
 pub struct Database {
     pub data: Matrix,
@@ -213,7 +235,7 @@ mod tests {
         let index = 10;
 
         let database = Database::new_random(db_side_len, 0..=plain_mod - 1, SEED);
-        let compressed_db = database.compress(17);
+        let compressed_db = database.compress(3);
         let (server_hint, client_hint) = setup(&database, secret_dimension, Some(42));
         let (client_state, query_cipher) =
             query(index, db_side_len, secret_dimension, server_hint, plain_mod);
