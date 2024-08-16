@@ -241,20 +241,6 @@ pub fn mat_vec_mul(vector: &Vector, matrix: &Matrix) -> Vector {
     }
     Vector::from_vec(result)
 }
-pub fn mat_vec_mul_iter(vector: &Vector, matrix: &Matrix) -> Vector {
-    Vector::from_vec(
-        matrix
-            .data
-            .iter()
-            .map(|row| {
-                row.iter()
-                    .zip(&vector.data)
-                    .map(|(row_item, vec_item)| row_item * vec_item)
-                    .sum()
-            })
-            .collect(),
-    )
-}
 
 // Adds one vector to another in place.
 fn vec_add_mut(v1: &mut Vec<u64>, v2: &Vec<u64>) {
@@ -288,7 +274,7 @@ pub fn a_matrix_mul_db(a_matrix: &Matrix, db: &Matrix) -> Matrix {
 pub fn packed_mat_vec_mul(vector: &Vector, packed_matrix: &Matrix, mod_power: u32) -> Vector {
     let basis = mod_power as u64;
     let mask = 2_u64.pow(mod_power) - 1;
-    println!("Basis: {basis} Mask: {mask}");
+    // println!("Basis: {basis} Mask: {mask}");
     assert!(mod_power < 64 / 3);
     assert_eq!(vector.len().div_ceil(3), packed_matrix.ncols);
     let rows = packed_matrix.nrows();
@@ -296,7 +282,7 @@ pub fn packed_mat_vec_mul(vector: &Vector, packed_matrix: &Matrix, mod_power: u3
 
     let mut result = vec![0u64; rows];
 
-    for i in (0..rows - 4).step_by(4) {
+    for i in (0..rows / 4 * 4).step_by(4) {
         let mut row1_sum = 0;
         let mut row2_sum = 0;
         let mut row3_sum = 0;
@@ -366,7 +352,7 @@ pub fn packed_mat_vec_mul(vector: &Vector, packed_matrix: &Matrix, mod_power: u3
         result[i + 3] = row4_sum;
     }
 
-    for row_index in (rows - rows % 4 - 1)..rows {
+    for row_index in (rows / 4 * 4)..rows {
         let mut row_sum = 0;
         for j in 0..cols - 1 {
             let vec1 = vector.get_unchecked(j * 3);
@@ -376,17 +362,17 @@ pub fn packed_mat_vec_mul(vector: &Vector, packed_matrix: &Matrix, mod_power: u3
             let db = packed_matrix.get(row_index, j).unwrap_or(0);
             let mut val = db & mask;
 
-            println!("DB Entry: {db}");
-            println!("First Index: {val}");
+            // println!("DB Entry: {db}");
+            // println!("First Index: {val}");
             row_sum += val * vec1;
 
             val = db >> basis & mask;
-            println!("Second Index: {val}");
+            // println!("Second Index: {val}");
 
             row_sum += val * vec2;
 
             val = db >> basis * 2 & mask;
-            println!("Third Index: {val}");
+            // println!("Third Index: {val}");
 
             row_sum += val * vec3;
         }
