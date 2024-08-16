@@ -106,9 +106,9 @@ pub struct CompressedDatabase {
     mod_power: u32,
 }
 
-// A struct that contains information about the client's query, including the row and column index,
-// the a-matrix of the database, the side length of the database, the client's secret key, and the
-// key's length.
+/// A struct that contains information about the client's query, including the row and column index,
+/// the a-matrix of the database, the side length of the database, the client's secret key, and the
+/// key's length.
 #[derive(Clone, Debug, Eq, PartialEq, PartialOrd)]
 pub struct ClientState {
     row_index: usize,
