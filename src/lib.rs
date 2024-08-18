@@ -7,6 +7,7 @@ use rand_chacha::ChaCha20Rng;
 use rand_distr::Uniform;
 use regev::{encrypt, gen_a_matrix, gen_secret_key};
 use std::ops::RangeInclusive;
+use thiserror::Error;
 
 /// A square matrix that contains `u64` data records.
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd)]
@@ -15,26 +16,37 @@ pub struct Database {
     pub modulus: u64,
 }
 
+#[derive(Error, Debug)]
+pub enum DatabaseError {
+    #[error("The number of rows and columns in the matrix must be equal!")]
+    NonSquareMatrixError,
+    #[error("The modulus of the database must be less than 21!")]
+    CompressionModulusError,
+}
+
 impl Database {
     /// Creates a new Database from an existing square Matrix. Panics if the matrix is not square.
-    pub fn from_matrix(data: Matrix, modulus: u64) -> Database {
-        assert_eq!(data.nrows(), data.ncols());
-        Database { data, modulus }
+    pub fn from_matrix(data: Matrix, mod_power: u32) -> Result<Database, DatabaseError> {
+        if data.nrows() != data.ncols() {
+            return Err(DatabaseError::NonSquareMatrixError);
+        }
+        let modulus = 2_u64.pow(mod_power);
+        Ok(Database { data, modulus })
     }
     /// Creates a new Database of size `side_len` × `side_len` populated by random data. The data is
     /// sampled from a uniform distribution over the specified `range`.
-    pub fn new_random(side_len: usize, range: RangeInclusive<u64>) -> Database {
+    pub fn new_random(side_len: usize, range: RangeInclusive<u32>) -> Database {
         Database {
             data: Matrix::new_random(side_len, side_len, range.clone(), None),
-            modulus: range.end() + 1,
+            modulus: 2_u64.pow((*range.end() as f32 + 1.0).log2().ceil() as u32),
         }
     }
     /// Creates a new Database of size `side_len`×`side_len` populated by random data generated
     /// using a `seed. The data is samples from a uniform distribution over the specified `range`.
-    pub fn new_random_seed(side_len: usize, range: RangeInclusive<u64>, seed: u64) -> Database {
+    pub fn new_random_seed(side_len: usize, range: RangeInclusive<u32>, seed: u64) -> Database {
         Database {
             data: Matrix::new_random(side_len, side_len, range.clone(), Some(seed)),
-            modulus: range.end() + 1,
+            modulus: 2_u64.pow((*range.end() as f32 + 1.0).log2().ceil() as u32),
         }
     }
     /// Creates a new Database from a `Vec<u64>` of data and resizes it into a square matrix. Panics
@@ -71,8 +83,11 @@ impl Database {
     /// Compresses the database by packing three records into one 64-bit integer. The compression takes
     /// place along each row, meaning there'll be one third the number of columns in the new
     /// database compared to the old one.
-    pub fn compress(&self, mod_power: u32) -> CompressedDatabase {
-        assert!(mod_power < 64 / 3);
+    pub fn compress(&self, mod_power: u32) -> Result<CompressedDatabase, DatabaseError> {
+        // let mod_power = (self.modulus as f32).log2().ceil() as u32;
+        if mod_power > 21 {
+            return Err(DatabaseError::CompressionModulusError);
+        }
 
         let mask = 2_u64.pow(mod_power) - 1;
         let data: Vec<u64> = self
@@ -88,12 +103,12 @@ impl Database {
             })
             .flatten()
             .collect();
-        CompressedDatabase {
+        Ok(CompressedDatabase {
             data: Matrix::from_vec(data, self.data.nrows(), self.data.ncols().div_ceil(3)),
             nrows: self.data.nrows(),
             ncols: self.data.ncols().div_ceil(3),
             mod_power,
-        }
+        })
     }
 }
 
@@ -229,12 +244,13 @@ mod tests {
 
         let secret_dimension = 2048;
         let db_side_len = 40;
-        let mod_power = 3;
-        let plain_mod = 2_u64.pow(mod_power);
+        // let mod_power = 3;
+        // let plain_mod = 2_u64.pow(mod_power);
+        let plain_mod = 4;
         let index = 0;
 
-        let database = Database::new_random_seed(db_side_len, 0..=plain_mod - 1, SEED);
-        let compressed_db = database.compress(mod_power);
+        let database = Database::new_random_seed(db_side_len, 0..=plain_mod as u32 - 1, SEED);
+        let compressed_db = database.compress(2).unwrap();
         let (server_hint, client_hint) = setup(&database, secret_dimension, Some(42));
         let (client_state, query_cipher) =
             query(index, db_side_len, secret_dimension, server_hint, plain_mod);
@@ -258,8 +274,8 @@ mod tests {
         let mod_power = 17;
         let plain_mod = 2u64.pow(mod_power);
 
-        let database = Database::new_random_seed(db_side_len, 0..=plain_mod - 1, SEED);
-        let compressed_database = database.compress(mod_power);
+        let database = Database::new_random_seed(db_side_len, 0..=plain_mod as u32 - 1, SEED);
+        let compressed_database = database.compress(mod_power).unwrap();
         let (server_hint, client_hint) = setup(&database, secret_dimension, Some(42));
         for index in 0..100 {
             let (client_state, query_cipher) =
@@ -283,8 +299,9 @@ mod tests {
         let secret_dimension = 10;
         let db_side_len = 1000;
         let plain_mod = 2u64.pow(3);
+        let plain_mod = 3;
 
-        let database = Database::new_random_seed(db_side_len, 0..=plain_mod - 1, SEED);
+        let database = Database::new_random_seed(db_side_len, 0..=plain_mod as u32 - 1, SEED);
         let (server_hint, client_hint) = setup(&database, secret_dimension, Some(42));
         for index in 0..100 {
             let (client_state, query_cipher) =
@@ -310,8 +327,8 @@ mod tests {
         let mod_power = 17;
         let plain_mod = 2u64.pow(mod_power);
 
-        let database = Database::new_random_seed(db_side_len, 0..=plain_mod - 1, SEED);
-        let database_compressed = database.compress(mod_power);
+        let database = Database::new_random_seed(db_side_len, 0..=plain_mod as u32 - 1, SEED);
+        let database_compressed = database.compress(mod_power).unwrap();
         let (server_hint, client_hint) = setup(&database, secret_dimension, Some(42));
         for index in 0..1444 {
             let (client_state, query_cipher) =

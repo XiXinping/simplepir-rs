@@ -21,13 +21,18 @@ impl Matrix {
     pub fn from_data(data: Vec<Vec<u64>>) -> Matrix {
         let nrows = data.len();
         let ncols = data[0].len();
+        assert!(nrows > 0);
+        assert!(ncols > 0);
         for row in &data {
             assert_eq!(row.len(), ncols);
         }
         Matrix { nrows, ncols, data }
     }
     pub fn from_vec(vector: Vec<u64>, nrows: usize, ncols: usize) -> Matrix {
-        assert_eq!(vector.len(), nrows * ncols);
+        assert!(nrows > 0);
+        assert!(ncols > 0);
+        let mut vector = vector;
+        vector.resize(nrows * ncols, 0);
         let mut result = Vec::<Vec<u64>>::with_capacity(nrows * ncols);
         for row in vector.chunks_exact(ncols) {
             result.push(row.to_owned());
@@ -42,7 +47,7 @@ impl Matrix {
     pub fn new_random(
         nrows: usize,
         ncols: usize,
-        range: RangeInclusive<u64>,
+        range: RangeInclusive<u32>,
         seed: Option<u64>,
     ) -> Matrix {
         let mut rng = if let Some(num) = seed {
@@ -55,7 +60,7 @@ impl Matrix {
         for _ in 0..nrows {
             let mut row = Vec::<u64>::with_capacity(ncols);
             for _ in 0..ncols {
-                row.push(distribution.sample(&mut rng));
+                row.push(distribution.sample(&mut rng) as u64);
             }
             result.push(row);
         }
@@ -154,7 +159,7 @@ impl Vector {
             data: vector,
         }
     }
-    pub fn new_random(len: usize, range: RangeInclusive<u64>, seed: Option<u64>) -> Vector {
+    pub fn new_random(len: usize, range: RangeInclusive<u32>, seed: Option<u64>) -> Vector {
         let mut rng = if let Some(num) = seed {
             ChaCha20Rng::seed_from_u64(num)
         } else {
@@ -163,7 +168,7 @@ impl Vector {
         let distribution = Uniform::from(range);
         let mut result = Vec::<u64>::with_capacity(len);
         for _ in 0..len {
-            result.push(distribution.sample(&mut rng));
+            result.push(distribution.sample(&mut rng) as u64);
         }
         Vector::from_vec(result)
     }
