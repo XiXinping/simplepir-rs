@@ -6,10 +6,11 @@ A fast and efficient implementation of SimplePIR in Rust.
 (PIR) is a protocol for accessing information from a database hosted on a
 server without the server knowing anything about the information that was
 accessed, including the index of the information within the database. SimplePIR
-is a fast and efficient implementation of PIR that provides  communication
-costs and linear computation costs. To learn more about SimplePIR, check out
-[this paper](https://eprint.iacr.org/2022/949) by Alexandra Henzinger, Matthew
-M. Hong, Henry Corrigan-Gibbs, Sarah Meiklejohn, and Vinod Vaikuntanathan.
+is a fast and efficient implementation of PIR that provides square-root
+communication costs and linear computation costs. To learn more about
+SimplePIR, check out [this paper](https://eprint.iacr.org/2022/949) by
+Alexandra Henzinger, Matthew M. Hong, Henry Corrigan-Gibbs, Sarah Meiklejohn,
+and Vinod Vaikuntanathan.
 
 ## Getting Started
 We'll start by specifying some basic parameters for the SimplePIR scheme. For
