@@ -35,14 +35,11 @@ let matrix = Matrix::from_data(
     ]
 );
 let db = Database::from_matrix(matrix, 17);
-
 ```
 To increase performance and decrease memory consumption, the database can be
 compressed by packing three data records (numbers) into a single record.
-
 ```
 let compressed_db = db.compress();
-
 ```
 Now for the fun parts!
 
@@ -62,7 +59,7 @@ let (server_hint, client_hint) = setup(&database, secret_dimension, None);
 
 The next three functions are run during the "online" phase.
 
-###`query()`
+### `query()`
 Takes an index into the database and outputs an encrypted query. This is called
 by the **client**.
 
