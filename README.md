@@ -111,7 +111,7 @@ The database size used  was 3600×3600 (about 104 MB) and the secret-key
 dimension was 2048.
 
 |Function   |Time        |Throughput          |
------------------------------------------------
+|-----------|------------|--------------------|
 |setup()    |22.8 s      |7 MB/s              |
 |query()    |56.0 ms     |N/A                 |
 |answer()   |4.8 ms      |21.6 GB/s           |
@@ -125,6 +125,7 @@ packing implementation discussed earlier.
 As lovely as this library is, there's definitely room for improvement. I'm not
 sure if I'll have time to add in new features. If you feel inclined to
 implement a new feature, feel free to make a pull request!
-- [] Support for `u16`, `u32`, and `u128`
-- [] Implementing the packing optimization in `setup()`
-- [] GPU support
+
+- [  ] Support for `u16`, `u32`, and `u128`
+- [  ] Implementing the packing optimization in `setup()`
+- [  ] GPU support
