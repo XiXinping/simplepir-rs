@@ -96,5 +96,35 @@ assert_eq!(database.get(index).unwrap(), record);
 
 
 ## But is it fast?
-Yes.
+Yup.
 
+SimplePIR is a very efficient PIR protocol. The `answer()` function, the most
+performance critical part of the online phase has a linear time-complexity
+and runs at memory bandwidth speeds on measured hardware. The `query()` and
+`recover()` functions also run very fast.
+
+## Benchmarks
+The following benchmarks were recorded on a Lenovo Thinkpad X1 Carbon 6th Gen
+with an Intel Core i7-8650U @ 4.2 GHz with 16GB of RAM running Manjaro Linux.
+Obviously, these will vary considerably depending on the hardware you use.
+The database size used  was 3600×3600 (about 104 MB) and the secret-key
+dimension was 2048.
+
+|Function   |Time        |Throughput          |
+-----------------------------------------------
+|setup()    |22.8 s      |7 MB/s              |
+|query()    |56.0 ms     |N/A                 |
+|answer()   |4.8 ms      |21.6 GB/s           |
+|recover()  |1.4 μs      |2.5 GB/s            |
+
+Recorded memory bandwidth was around 10-12 GB/s. The `answer()` function was
+actually able to exceed memory bandwidth by around 2x thanks to the efficient
+packing implementation discussed earlier.
+
+## Roadmap
+As lovely as this library is, there's definitely room for improvement. I'm not
+sure if I'll have time to add in new features. If you feel inclined to
+implement a new feature, feel free to make a pull request!
+- [] Support for `u16`, `u32`, and `u128`
+- [] Implementing the packing optimization in `setup()`
+- [] GPU support

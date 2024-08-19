@@ -279,7 +279,6 @@ pub fn a_matrix_mul_db(a_matrix: &Matrix, db: &Matrix) -> Matrix {
 pub fn packed_mat_vec_mul(vector: &Vector, packed_matrix: &Matrix, mod_power: u32) -> Vector {
     let basis = mod_power as u64;
     let mask = 2_u64.pow(mod_power) - 1;
-    // println!("Basis: {basis} Mask: {mask}");
     assert!(mod_power < 64 / 3);
     assert_eq!(vector.len().div_ceil(3), packed_matrix.ncols);
     let rows = packed_matrix.nrows();
