@@ -1,5 +1,5 @@
 # simplepir-rs
-An implementation of SimplePIR in Rust. 
+A fast and efficient implementation of SimplePIR in Rust. 
 
 ## Background
 [Private information retrieval](https://en.wikipedia.org/wiki/Private_information_retrieval)
