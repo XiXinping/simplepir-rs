@@ -34,9 +34,9 @@ let matrix = Matrix::from_data(
         vec![13, 14, 15, 16],
     ]
 );
-let db = Database::from_matrix(matrix, 17);
+let db = Database::from_matrix(matrix, mod_power);
 ```
-To increase performance and decrease memory consumption, the database can be
+To increase performance while decreasing memory consumption, the database can be
 compressed by packing three data records (numbers) into a single record.
 ```rust
 let compressed_db = db.compress();
@@ -50,8 +50,8 @@ There are four main functions of the SimplePIR protocol:
 
 ### `setup()`
 Takes the database as input and outputs a hint for the client and for the
-server. This is called by the **server**. It's very computationally heavy, but
-massively speeds up the "online" portion of the protocol.
+server. This is called by the **server** separately and prior to the other functions. It's very
+computationally heavy, but massively speeds up the "online" portion of the protocol.
 
 ```rust
 let (server_hint, client_hint) = setup(&compressed_db, secret_dimension);

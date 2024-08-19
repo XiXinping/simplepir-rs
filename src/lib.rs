@@ -32,9 +32,9 @@
 //!         vec![13, 14, 15, 16],
 //!     ]
 //! );
-//! let db = Database::from_matrix(matrix, 17);
+//! let db = Database::from_matrix(matrix, mod_power);
 //! ```
-//! To increase performance and decrease memory consumption, the database can be
+//! To increase performance while decreasing memory consumption, the database can be
 //! compressed by packing three data records (numbers) into a single record.
 //! ```
 //! let compressed_db = db.compress();
@@ -42,18 +42,18 @@
 //!
 //! Now for the fun parts! There are four main functions of the SimplePIR protocol:
 //!
-//! ### The first function runs during the "offline" phase.
+//! ### Offline Phase
 //!
 //! ## [`setup()`]
 //! Takes the database as input and outputs a hint for the client and for the
-//! server. This is called by the **server**. It's very computationally heavy, but
-//! massively speeds up the "online" portion of the protocol.
+//! server. This is called by the **server** separately and prior to the other functions. It's very
+//! computationally heavy, but massively speeds up the "online" portion of the protocol.
 //!
 //! ```
 //! let (server_hint, client_hint) = setup(&compressed_db, secret_dimension);
 //! ```
 //!
-//! ### The next three functions run during the "online" phase.
+//! ### Online Phase
 //!
 //! ## [`query()`]
 //! Takes an index into the database and outputs an encrypted query. This is called
@@ -69,9 +69,9 @@
 //! client's query.
 //!
 //! ## [`answer()`]
-//! Takes the matrix-vector product between the encrypted query and the entire
-//! database and outputs an encrypted answer vector. This is called by **server**
-//! and is the most computationally intense part of the online phase.
+//! Takes the matrix-vector product between the encrypted query and the entire database and outputs
+//! an encrypted answer vector. This is called by the **server** and is the most computationally
+//! intense part of the online phase.
 //!
 //! ```
 //! let answer_cipher = answer(&compressed_db, &query_cipher);
@@ -294,7 +294,7 @@ pub fn setup_seeded(database: &Database, secret_dimension: usize, seed: [u8; 32]
     (server_hint, client_hint)
 }
 /// Takes an index in the length-N database and outputs a vector with all 0s except for a 1 at the
-/// column index
+/// column index.
 pub fn query(
     index: usize,
     db_side_len: usize,
