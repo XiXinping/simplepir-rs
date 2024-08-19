@@ -126,6 +126,6 @@ As lovely as this library is, there's definitely room for improvement. I'm not
 sure if I'll have time to add in new features. If you feel inclined to
 implement a new feature, feel free to make a pull request!
 
-- [  ] Support for `u16`, `u32`, and `u128`
-- [  ] Implementing the packing optimization in `setup()`
-- [  ] GPU support
+- [ ] Support for `u16`, `u32`, and `u128`
+- [ ] Implementing the packing optimization in `setup()`
+- [ ] GPU support
