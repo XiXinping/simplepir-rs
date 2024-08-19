@@ -6,7 +6,7 @@ An implementation of SimplePIR in Rust.
 (PIR) is a protocol for accessing information from a database hosted on a
 server without the server knowing anything about the information that was
 accessed, including the index of the information within the database. SimplePIR
-is a fast and efficient implementation of PIR that provides √N communication
+is a fast and efficient implementation of PIR that provides $sqrt{N}$ communication
 costs and linear computation costs. To learn more about SimplePIR check out
 [this paper](https://eprint.iacr.org/2022/949) by Alexandra Henzinger, Matthew
 M. Hong, Henry Corrigan-Gibbs, Sarah Meiklejohn, and Vinod Vaikuntanathan.
@@ -16,7 +16,7 @@ We'll start by specifying some basic parameters for the SimplePIR scheme. For
 good security and performance, a secret-key dimension (the length of the
 encryption key) of 2048 is recommended. We'll also specify the plaintext
 modulus, which tells us the range of numbers that can be accurately accessed
-and decrypted. In this example, we'll use 2^17.
+and decrypted. In this example, we'll use $2^17$.
 ```rust
 use simplepir::{Matrix, Database};
 let secret_dimension = 2048;
