@@ -46,7 +46,7 @@ Now for the fun parts!
 There are four main functions of the SimplePIR protocol:
 
 
-The first function is run during the "offline" phase.
+##### The first function is run during the "offline" phase.
 
 ### `setup()`
 Takes the database as input and outputs a hint for the client and for the
@@ -57,7 +57,7 @@ massively speeds up the "online" portion of the protocol.
 let (server_hint, client_hint) = setup(&compressed_db, secret_dimension);
 ```
 
-The next three functions are run during the "online" phase.
+##### The next three functions are run during the "online" phase.
 
 ### `query()`
 Takes an index into the database and outputs an encrypted query. This is called
