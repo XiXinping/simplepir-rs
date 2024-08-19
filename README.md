@@ -108,7 +108,7 @@ The following benchmarks were recorded on a Lenovo Thinkpad X1 Carbon 6th Gen
 with an Intel Core i7-8650U @ 4.2 GHz with 16GB of RAM running Manjaro Linux.
 Obviously, these will vary considerably depending on the hardware you use.
 The database size used  was 3600×3600 (about 104 MB) and the secret-key
-dimension was 2048.
+dimension was 2,048.
 
 |Function   |Time        |Throughput          |
 |-----------|------------|--------------------|
