@@ -54,7 +54,7 @@ server. This is called by the **server**. It's very computationally heavy, but
 massively speeds up the "online" portion of the protocol.
 
 ```
-let (server_hint, client_hint) = setup(&database, secret_dimension, None);
+let (server_hint, client_hint) = setup(&compressed_db, secret_dimension, None);
 ```
 
 The next three functions are run during the "online" phase.
@@ -66,8 +66,7 @@ by the **client**.
 
 ```
 let index = 0;
-let (client_state, query_cipher) =
-    query(index, 4, secret_dimension, server_hint, plaintext_mod);
+let (client_state, query_cipher) = query(index, 4, secret_dimension, server_hint, plaintext_mod);
 
 ```
 The `client_state` variable just stores some basic information about the
@@ -87,8 +86,7 @@ let answer_cipher = answer(&compressed_db, &query_cipher);
 Takes the encrypted answer vector, decrypts it, and returns the desired record.
 
 ```
-let record = recover(&client_state, &client_hint, &answer_cipher,
-                     &query_cipher, plaintext_mod);
+let record = recover(&client_state, &client_hint, &answer_cipher, &query_cipher, plaintext_mod);
 ```
 
 Now if we did everything right, this assert shouldn't fail!
