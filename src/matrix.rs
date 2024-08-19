@@ -47,7 +47,7 @@ impl Matrix {
     pub fn new_random(
         nrows: usize,
         ncols: usize,
-        range: RangeInclusive<u32>,
+        range: RangeInclusive<u64>,
         seed: Option<u64>,
     ) -> Matrix {
         let mut rng = if let Some(num) = seed {
@@ -60,7 +60,7 @@ impl Matrix {
         for _ in 0..nrows {
             let mut row = Vec::<u64>::with_capacity(ncols);
             for _ in 0..ncols {
-                row.push(distribution.sample(&mut rng) as u64);
+                row.push(distribution.sample(&mut rng));
             }
             result.push(row);
         }
@@ -159,7 +159,7 @@ impl Vector {
             data: vector,
         }
     }
-    pub fn new_random(len: usize, range: RangeInclusive<u32>, seed: Option<u64>) -> Vector {
+    pub fn new_random(len: usize, range: RangeInclusive<u64>, seed: Option<u64>) -> Vector {
         let mut rng = if let Some(num) = seed {
             ChaCha20Rng::seed_from_u64(num)
         } else {
@@ -168,7 +168,7 @@ impl Vector {
         let distribution = Uniform::from(range);
         let mut result = Vec::<u64>::with_capacity(len);
         for _ in 0..len {
-            result.push(distribution.sample(&mut rng) as u64);
+            result.push(distribution.sample(&mut rng));
         }
         Vector::from_vec(result)
     }
