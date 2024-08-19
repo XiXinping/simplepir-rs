@@ -6,13 +6,13 @@
 //! server knowing anything about the information that was accessed, including the index of the
 //! information within the database. SimplePIR is a fast and efficient implementation of PIR that
 //! provides √N communication costs and linear computation costs. To learn more about
-//! SimplePIR check out [this paper](https://eprint.iacr.org/2022/949) by Alexandra Henzinger,
+//! SimplePIR, check out [this paper](https://eprint.iacr.org/2022/949) by Alexandra Henzinger,
 //! Matthew M. Hong, Henry Corrigan-Gibbs, Sarah Meiklejohn, and Vinod Vaikuntanathan.
 //!
 //! # Getting Started
 //! We'll start by specifying some basic parameters for the SimplePIR scheme. For
 //! good security and performance, a secret-key dimension (the length of the
-//! encryption key) of 2048 is recommended. We'll also specify the plaintext
+//! encryption key) of 2,048 is recommended. We'll also specify the plaintext
 //! modulus, which tells us the range of numbers that can be accurately accessed
 //! and decrypted. In this example, we'll use 2^17.
 //! ```
@@ -22,7 +22,8 @@
 //! let plaintext_mod = 2_u64.pow(mod_power);
 //! ```
 //! We'll then create a simple database to store our data. Databases can be created
-//! at random or from an existing Matrix.
+//! at random or from an existing Matrix. This crate provides basic [Matrix] and [Vector] types for
+//! convenience.
 //! ```
 //! let matrix = Matrix::from_data(
 //!     vec![
@@ -34,7 +35,7 @@
 //! );
 //! let db = Database::from_matrix(matrix, mod_power);
 //! ```
-//! To increase performance while decreasing memory consumption, the database can be
+//! To increase performance while also decreasing memory consumption, the database can be
 //! compressed by packing three data records (numbers) into a single record.
 //! ```
 //! let compressed_db = db.compress();
@@ -293,8 +294,8 @@ pub fn setup_seeded(database: &Database, secret_dimension: usize, seed: [u8; 32]
     let client_hint = a_matrix_mul_db(&a_matrix, &data);
     (server_hint, client_hint)
 }
-/// Takes an index in the length-N database and outputs a vector with all 0s except for a 1 at the
-/// column index.
+/// Takes an index in the length-N database and outputs an encrypted vector with all 0s except for
+/// a 1 at the column index.
 pub fn query(
     index: usize,
     db_side_len: usize,
@@ -321,7 +322,7 @@ pub fn query(
     )
 }
 
-/// Computes the matrix-vector product of the packed database and the encrypted query. The output is an
+/// Computes the matrix-vector product of the **packed** database and the encrypted query. The output is an
 /// encrypted vector that can be decrypted to reveal the records along the column indicated in the
 /// query.
 pub fn answer(database: &CompressedDatabase, query_cipher: &Vector) -> Vector {
